@@ -13,47 +13,50 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 @Module
 public class ConnectionModule {
 
-	@AppScope
-	@Provides
-	HttpLoggingInterceptor provideInterceptor() {
-		HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-		interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-		return interceptor;
-	}
+    @AppScope
+    @Provides
+    HttpLoggingInterceptor provideInterceptor() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(message -> {
+            Timber.tag("OkHttp: ");
+            Timber.i(message);
+        }).setLevel(HttpLoggingInterceptor.Level.BODY);
+        return interceptor;
+    }
 
-	@AppScope
-	@Provides
-	Cache provideCache(Context context) {
-		return new Cache(context.getFilesDir(), 10 * 10 * 1000);
-	}
+    @AppScope
+    @Provides
+    Cache provideCache(Context context) {
+        return new Cache(context.getFilesDir(), 10 * 10 * 1000);
+    }
 
-	@AppScope
-	@Provides
-	OkHttpClient provideHttpClient(HttpLoggingInterceptor interceptor, Cache cache) {
-		return new OkHttpClient().newBuilder()
-			.addInterceptor(interceptor)
-			.cache(cache)
-			.build();
-	}
+    @AppScope
+    @Provides
+    OkHttpClient provideHttpClient(HttpLoggingInterceptor interceptor, Cache cache) {
+        return new OkHttpClient().newBuilder()
+                .addInterceptor(interceptor)
+                .cache(cache)
+                .build();
+    }
 
-	@AppScope
-	@Provides
-	GsonConverterFactory provideGsonFactory() {
-		return GsonConverterFactory.create();
-	}
+    @AppScope
+    @Provides
+    GsonConverterFactory provideGsonFactory() {
+        return GsonConverterFactory.create();
+    }
 
-	@Provides
-	AppSchedulers provideScheduler() {
-		return new AppSchedulers();
-	}
+    @Provides
+    AppSchedulers provideScheduler() {
+        return new AppSchedulers();
+    }
 
-	@AppScope
-	@Provides
-	RxJava2CallAdapterFactory provideAdapterFactory(AppSchedulers scheduler) {
-		return RxJava2CallAdapterFactory.createWithScheduler(scheduler.internetScheduler());
-	}
+    @AppScope
+    @Provides
+    RxJava2CallAdapterFactory provideAdapterFactory(AppSchedulers scheduler) {
+        return RxJava2CallAdapterFactory.createWithScheduler(scheduler.internetScheduler());
+    }
 }
