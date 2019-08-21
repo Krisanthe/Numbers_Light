@@ -2,6 +2,7 @@ package krisanthe.exercise.numberslight.features.numbers.logic;
 
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -43,6 +44,8 @@ public class NumbersView {
 
     private void setupAdapter(Context context) {
         adapter = new NumbersAdapter();
+        numberListView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
+        numberListView.setHasFixedSize(true);
         numberListView.setAdapter(adapter);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(context);
         numberListView.setLayoutManager(mLayoutManager);
